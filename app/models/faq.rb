@@ -14,8 +14,8 @@
 #
 
 class Faq < ApplicationRecord
-  include Translatable
-  translates :question, :answer, touch: true
+  # include Translatable
+  # translates :question, :answer, touch: true
 
   mount_base64_uploader :image, PhotoUploader
   attr_accessor :delete_image
@@ -24,11 +24,11 @@ class Faq < ApplicationRecord
   validates_uniqueness_of :position
   validates_presence_of :position
 
-  active_admin_translates :question do
-    validates_presence_of :question
-  end
-
-  active_admin_translates :answer do
-    validates_presence_of :answer
-  end
+  # active_admin_translates :question do
+  #   validates_presence_of :question
+  # end
+  #
+  # active_admin_translates :answer do
+  #   validates_presence_of :answer
+  # end
 end

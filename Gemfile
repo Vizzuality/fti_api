@@ -48,7 +48,7 @@ gem 'rswag-ui'
 
 # Data
 gem 'activerecord-import'
-gem 'globalize', '5.1.0'
+# gem 'globalize', '5.1.0'
 gem 'seed-fu'
 
 # Validation

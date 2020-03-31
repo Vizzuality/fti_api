@@ -20,11 +20,11 @@
 #
 
 class RequiredOperatorDocument < ApplicationRecord
-  include ForestTypeable
+  # include ForestTypeable
   acts_as_paranoid
-
-  translates :explanation, touch: true
-  active_admin_translates :explanation
+  #
+  # translates :explanation, touch: true
+  # active_admin_translates :explanation
 
   belongs_to :required_operator_document_group
   belongs_to :country

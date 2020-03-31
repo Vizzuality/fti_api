@@ -15,13 +15,13 @@
 #
 
 class Subcategory < ApplicationRecord
-  include Translatable
+  # include Translatable
   enum subcategory_type: { operator: 0, government: 1 }
-  translates :name, :details, touch: true
-
-  # rubocop:disable Style/BlockDelimiters
-  active_admin_translates :name do; end
-  # rubocop:enable Style/BlockDelimiters
+  # translates :name, :details, touch: true
+  #
+  # # rubocop:disable Style/BlockDelimiters
+  # active_admin_translates :name do; end
+  # # rubocop:enable Style/BlockDelimiters
 
   validates_presence_of :category, :subcategory_type
 

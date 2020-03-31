@@ -30,9 +30,9 @@
 #
 
 class Operator < ApplicationRecord
-  include Translatable
-  translates :name, :details, touch: true
-  active_admin_translates :name, :details
+  # include Translatable
+  # translates :name, :details, touch: true
+  # active_admin_translates :name, :details
 
   mount_base64_uploader :logo, LogoUploader
   attr_accessor :delete_logo
@@ -92,13 +92,13 @@ class Operator < ApplicationRecord
   scope :fmus_with_certification_ls,      ->          { joins(:fmus).where(fmus: { certification_ls: true }).distinct }
 
 
-  class Translation
-    after_save do
-      if name_changed?
-        Operator.find_by(id: operator_id)&.fmus&.find_each { |fmu| fmu.save }
-      end
-    end
-  end
+  # class Translation
+  #   after_save do
+  #     if name_changed?
+  #       Operator.find_by(id: operator_id)&.fmus&.find_each { |fmu| fmu.save }
+  #     end
+  #   end
+  # end
 
   class << self
     def fetch_all(options)

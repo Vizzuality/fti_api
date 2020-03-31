@@ -14,12 +14,12 @@
 #
 
 class Government < ApplicationRecord
-  include Translatable
+  # include Translatable
 
   # rubocop:disable Style/BlockDelimiters
-  translates :government_entity, :details, touch: true
+  # translates :government_entity, :details, touch: true
 
-  active_admin_translates :government_entity, :details do; end
+  # active_admin_translates :government_entity, :details do; end
   # rubocop:enable Style/BlockDelimiters
 
   belongs_to :country, inverse_of: :governments, optional: true

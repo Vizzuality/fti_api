@@ -27,15 +27,15 @@ class Fmu < ApplicationRecord
   acts_as_paranoid
 
   include ValidationHelper
-  include Translatable
+  # include Translatable
   include ForestTypeable
-  translates :name, touch: true
+  # translates :name, touch: true
 
   attr_reader :esri_shapefiles_zip
 
-  active_admin_translates :name do
-    validates_presence_of :name
-  end
+  # active_admin_translates :name do
+  #   validates_presence_of :name
+  # end
 
   belongs_to :country, inverse_of: :fmus
   has_many :observations, inverse_of: :fmu, dependent: :destroy
@@ -100,7 +100,7 @@ class Fmu < ApplicationRecord
           <<~SQL
             SELECT ST_ASMVT(tile.*, 'layer0', 4096, 'mvtgeometry', 'id') as tile
              FROM (SELECT id, properties, ST_AsMVTGeom(the_geom_webmercator, ST_TileEnvelope(#{z},#{x},#{y}), 4096, 256, true) AS mvtgeometry
-                                      FROM (select *, st_transform(geometry, 3857) as the_geom_webmercator from fmus) as data 
+                                      FROM (select *, st_transform(geometry, 3857) as the_geom_webmercator from fmus) as data
                                     WHERE ST_AsMVTGeom(the_geom_webmercator, ST_TileEnvelope(#{z},#{x},#{y}),4096,0,true) IS NOT NULL) AS tile;
           SQL
 

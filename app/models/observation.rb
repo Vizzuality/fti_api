@@ -36,12 +36,12 @@
 #
 
 class Observation < ApplicationRecord
-  include Translatable
+  # include Translatable
   include Activable
   include ValidationHelper
 
-  translates :details, :concern_opinion, :litigation_status, touch: true
-  active_admin_translates :details, :concern_opinion, :litigation_status
+  # translates :details, :concern_opinion, :litigation_status, touch: true
+  # active_admin_translates :details, :concern_opinion, :litigation_status
 
   enum observation_type: { "operator" => 0, "government" => 1 }
   enum validation_status: { "Created" => 0, "Ready for revision" => 1, "Under revision" => 2, "Approved" => 3, "Rejected" => 4 }

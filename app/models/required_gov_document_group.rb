@@ -14,13 +14,13 @@
 #
 
 class RequiredGovDocumentGroup < ApplicationRecord
-  include Translatable
-
-  translates :name, touch: true
-  translates :description
-  active_admin_translates :name do
-    validates_presence_of :name
-  end
+  # include Translatable
+  #
+  # translates :name, touch: true
+  # translates :description
+  # active_admin_translates :name do
+  #   validates_presence_of :name
+  # end
 
   validates_presence_of :position
   has_many :required_gov_documents, dependent: :destroy
