@@ -27,35 +27,41 @@ class DocumentMigrationService
     end
   end
 
-  # Creates anOperatorDocumentHistory for each OperatorDocument
-  # and deletes the ones that aren't active
+  # Creates an OperatorDocumentHistory for the last current version of the operator document
+  # and deletes the ones that aren't current but do have a current version with an existing OperatorDocumentHistory
+  #
   def migrate_documents
     return unless @documents
 
     not_to_destroy = []
-    OperatorDocument.unscoped.find_each do |od|
-      current = OperatorDocument.unscoped.where(current: true, operator_id: od.operator_id,
+
+    operator_documents_unscoped = OperatorDocument.unscoped
+
+    puts "operator_documents_unscoped.count >> #{operator_documents_unscoped.count}"
+    puts "OperatorDocumentHistory >> #{OperatorDocumentHistory.all.count}"
+
+    operator_documents_unscoped.find_each do |od|
+      current = operator_documents_unscoped.where(current: true, operator_id: od.operator_id,
                                                 required_operator_document_id: od.required_operator_document_id,
-                                                fmu_id: od.fmu_id)
+                                                fmu_id: od.fmu_id).order(updated_at: :desc)
 
       if current.none?
         params = { 'operator_document_id' => od.id }
-        not_to_destroy << od.id
+        not_to_destroy.push(od.id)
       else
         params = { 'operator_document_id' => current.first.id }
       end
 
       history = od.create_history(params)
-      unless history.persisted?
-        Rails.logger.warn "Couldn't create history for document #{od.id}"
-        not_to_destroy << od.id
-      end
+      not_to_destroy.push(operator_document_id) unless history.persisted?
     end
 
-    AnnexDocument.where(documentable_type: 'OperatorDocument')
-      .joins('join operator_documents on operator_documents.id = annex_documents.documentable_id')
-      .where('operator_documents.current != true AND operator_documents.id not in (?)', not_to_destroy)
-      .delete_all
-    OperatorDocument.unscoped.where.not(current: true, id: not_to_destroy).delete_all
+    operator_documents_destroyable = operator_documents_unscoped.where.not(current: true, id: not_to_destroy)
+
+    operator_documents_destroyable.each do |od|
+      AnnexDocument.where(documentable_type: 'OperatorDocument', documentable_id: od.id).delete_all
+    end
+
+    operator_documents_destroyable.delete_all
   end
 end
