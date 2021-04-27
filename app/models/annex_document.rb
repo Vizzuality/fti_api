@@ -16,11 +16,11 @@ class AnnexDocument < ApplicationRecord
   belongs_to :operator_document_annex
 
   # An annex can only belong to one Operator Document
-  validates_uniqueness_of :documentable_id,
-                          conditions: -> { where(documentable_type: 'OperatorDocument') },
-                          scope: :operator_document_annex_id
+  # validates_uniqueness_of :documentable_id,
+  #                         conditions: -> { where(documentable_type: 'OperatorDocument') },
+  #                         scope: :operator_document_annex_id
 
-  # A Documentable cannot have the same annex more than once
-  validates_uniqueness_of :operator_document_annex_id,
-                          scope: [:documentable_type, :documentable_id]
+  # # A Documentable cannot have the same annex more than once
+  # validates_uniqueness_of :operator_document_annex_id,
+  #                         scope: [:documentable_type, :documentable_id]
 end
