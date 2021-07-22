@@ -69,47 +69,6 @@ module V1
       render json: filters
     end
 
-    def index
-      records = filtered_records
-
-      observation_types = records.pluck(:observation_type).uniq.map { |o| OBS_TYPES[o] }
-
-      country_ids = Country.with_translations.where(id: records.pluck(:country_id).uniq).map{ |x| { id: x.id, iso: x.iso, name: x.name } }.sort_by { |x| x[:name] }
-      fmu_ids = records.joins(:fmu)
-                  .joins("JOIN fmu_translations on fmu_translations.fmu_id = fmus.id and fmu_translations.locale = '#{I18n.locale}'")
-                    .select('fmus.id, fmu_translations.name').group('fmus.id, fmu_translations.id')
-                    .map{ |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
-      operator_ids = records.joins(:operator)
-                       .joins("JOIN operator_translations on operator_translations.operator_id = operators.id and operator_translations.locale = '#{I18n.locale}'")
-                         .select("operators.id, operator_translations.name").group('operators.id, operator_translations.name')
-                         .map { |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
-      years = records.pluck(:publication_date).uniq.map{ |x| x.year }.uniq.sort.map{ |x| { id: x, name: x } }
-      observer_ids = Observer.where(id: records.joins(:observers).select('observers.id').uniq)
-                       .map{ |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
-      subcategory_ids = Subcategory.where(id: records.pluck(:subcategory_id).uniq)
-      category_ids = Category.where(id: subcategory_ids.select(:category_id).uniq)
-                       .map{ |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
-      subcategory_ids = subcategory_ids.with_translations.map{ |o| { id: o.id, name: o.name } }
-      severities = records.joins(:severity).pluck('severities.level').uniq.map { |x| SEVERITIES[x] }
-      report_ids = records.joins(:observation_report).select('observation_reports.id, observation_reports.title').uniq
-                     .map { |x| { id: x.id, name: x.title } }.sort_by { |x| x[:title] }
-
-      filters = {
-          observation_type: observation_types,
-          country_id: country_ids,
-          fmu_id: fmu_ids,
-          years: years,
-          observer_id: observer_ids,
-          category_id: category_ids,
-          subcategory_id: subcategory_ids,
-          severity_level: severities,
-          operator: operator_ids,
-          'observation-report': report_ids
-      }.to_json
-
-      render json: filters
-    end
-
     def csv
       filters = observation_filters
       send_data to_csv(filters), filename: "observations-#{Date.today}.csv"
@@ -217,30 +176,6 @@ module V1
       filters
     end
 
-    def filtered_records
-      records = Observation.all.includes(:translations, :law, :severity, :observation_report, country: :translations,
-                                                                                              fmu: :translations,
-                                                                                              subcategory: :translations,
-                                                                                              operator: :translations,
-                                                                                              governments: :translations,
-                                                                                              observers: :translations)
-
-      params['filter']&.each do |k, v|
-        next unless valid_params(k, v)
-
-        # Different behavior for when the model attribute is an enum
-        if Observation.public_methods.include? k.pluralize.underscore.to_sym
-          enum_values = v.split(',').map { |e| Observation.public_send(k.pluralize.underscore.to_sym)[e.to_sym] }
-          records = records.where(k.underscore => enum_values)
-        elsif query = FILTER_TYPES[k.dasherize.to_sym][:query]
-          records = records.where(query + "(#{v})")
-        else
-          records = records.where(k.underscore => v.split(','))
-        end
-      end
-      records
-    end
-
     def types
       categories_operator = Category.where(category_type: 'operator').pluck(:id)
       categories_government = Category.where(category_type: 'government').pluck(:id)
@@ -290,7 +225,9 @@ module V1
     end
 
     def observer_ids
-      Observer.all.with_translations.map{ |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
+      having_active_observations = Observation.active.joins(:observers).select(:observer_id).distinct.pluck(:observer_id)
+
+      Observer.active.where(id: having_active_observations).with_translations.map{ |x| { id: x.id, name: x.name } }.sort_by { |x| x[:name] }
     end
 
     def country_ids
