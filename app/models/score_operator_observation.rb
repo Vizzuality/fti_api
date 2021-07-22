@@ -57,7 +57,11 @@ class ScoreOperatorObservation < ApplicationRecord
   # We consider "visit" as a day with observations, regardless of the number of observations on the same day
   # So if there are 3 observations for the 1st of January and 10 for the 2nd, there were 2 visits
   def count_visits
-    visits_query = observations.select('date(publication_date)').group('date(publication_date)').count
+    visits_query = observations
+      .joins(:observation_report)
+      .select('date(observation_reports.publication_date)')
+      .group('date(observation_reports.publication_date)')
+      .count
     self.visits = visits_query.keys.count
   end
 

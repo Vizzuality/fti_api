@@ -226,11 +226,49 @@ RSpec.describe Operator, type: :model do
       end
 
       context 'when there are visits' do
-        it 'update observations per visits and calculate the score' do
-          ScoreOperatorObservation.recalculate! @operator
+        context 'all on the same day' do
+          it 'update observations per visits and calculate the score' do
+            ScoreOperatorObservation.recalculate! @operator
 
-          expect(@operator.score_operator_observation.obs_per_visit).to eql(4.0)
-          expect(@operator.score_operator_observation.score).to eql((4.0 + 2 + 2 + 1) / 9.0)
+            expect(@operator.score_operator_observation.obs_per_visit).to eql(4.0)
+            expect(@operator.score_operator_observation.score).to eql((4.0 + 2 + 2 + 1) / 9.0)
+          end
+        end
+
+        context 'on different days' do
+          before :each do
+            severity = create(:severity, level: 1)
+            # 4 observations already added in before :all for this operator on the same day
+            # adding 2 more on different days, so there will be 3 visits
+            create(
+              :observation,
+              severity: severity,
+              operator: @operator,
+              country: @country,
+              publication_date: 10.days.ago,
+              validation_status: 'Published (no comments)',
+              observation_report: build(:observation_report, publication_date: 10.days.ago)
+            )
+            create(
+              :observation,
+              severity: severity,
+              operator: @operator,
+              country: @country,
+              validation_status: 'Published (no comments)',
+              observation_report: build(:observation_report, publication_date: 3.days.ago)
+            )
+          end
+
+          it 'update observations per visits and calculate the score' do
+            ScoreOperatorObservation.recalculate! @operator
+
+            visits = 3
+
+            expect(@operator.score_operator_observation.obs_per_visit).to eql(6.0 / visits)
+            expect(@operator.score_operator_observation.score).to eql(
+              ((4.0 * 1) / visits + (2.0 * 1) / visits + (2.0 * 1) / visits + (1.0 * 3) / visits) / 9.0
+            )
+          end
         end
       end
     end

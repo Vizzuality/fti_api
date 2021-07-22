@@ -70,6 +70,7 @@ FactoryBot.define do
   factory :observation, class: 'Observation' do
     country
     subcategory
+    observation_report
     user { build(:admin) }
     severity { build(:severity, subcategory: subcategory) }
     operator { create(:operator, country: country) }
