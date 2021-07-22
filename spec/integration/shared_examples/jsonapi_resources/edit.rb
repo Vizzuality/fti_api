@@ -2,6 +2,8 @@ RSpec.shared_examples 'jsonapi-resources__edit' do |options|
   context "Edit" do
     let(:resource) { create(@singular.to_sym) }
     let(:route) { "/#{@route_key}/#{resource.id}" }
+    let(:valid_params) { try_to_call(options[:valid_params]) }
+    let(:invalid_params) { try_to_call(options[:invalid_params]) }
 
     (options[:success_roles] || [:webuser]).each do |role|
       describe "For user with #{role} role" do
@@ -9,7 +11,7 @@ RSpec.shared_examples 'jsonapi-resources__edit' do |options|
 
         it "Returns error object when cannot be updated by admin" do
           patch(route,
-                params: jsonapi_params(@collection, resource.id, options[:invalid_params]),
+                params: jsonapi_params(@collection, resource.id, invalid_params),
                 headers: headers)
 
           expect(parsed_body).to eq(jsonapi_errors(*options[:error_attributes]))
@@ -18,11 +20,12 @@ RSpec.shared_examples 'jsonapi-resources__edit' do |options|
 
         it "Returns success object when was successfully updated by admin" do
           patch(route,
-                params: jsonapi_params(@collection, resource.id, options[:valid_params]),
+                params: jsonapi_params(@collection, resource.id, valid_params),
                 headers: headers)
 
           expect(status).to eq(200)
-          options[:valid_params]
+          valid_params
+            .except(:relationships)
             .except(*options[:excluded_params])
             .each { |name, value| expect(parsed_attributes[name]).to eq(value) }
         end
@@ -35,7 +38,7 @@ RSpec.shared_examples 'jsonapi-resources__edit' do |options|
 
         it "Do not allows to update by not admin user" do
           patch(route,
-                params: jsonapi_params(@collection, resource.id, options[:valid_params]),
+                params: jsonapi_params(@collection, resource.id, valid_params),
                 headers: headers)
 
           expect(parsed_body).to eq(default_status_errors(401))

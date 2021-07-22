@@ -37,6 +37,9 @@ ActiveAdmin.register Operator, as: 'Producer' do
     link_to 'Delete Producer', admin_producer_path(operator), method: :delete, data: { confirm: confirmation_text }
   end
 
+  action_item only: [:index] do
+    link_to 'New Producer', new_admin_producer_path
+  end
 
   csv do
     column :id

@@ -6,7 +6,7 @@ module FileDataImport
 
     attr_accessor(
       :class_name, :permitted_attributes, :permitted_translations,
-      :raw_attributes, :abilities, :errors, :required, :belongs_as
+      :raw_attributes, :abilities, :errors, :required, :belongs_as, :use_shared_belongs_to
     )
 
     def initialize(class_name, raw_attributes, **options)
@@ -17,6 +17,7 @@ module FileDataImport
       @abilities = options[:can]&.map(&:to_sym) || []
       @required = options[:required]
       @belongs_as = options[:as]
+      @use_shared_belongs_to = options[:use_shared_belongs_to] || []
       @errors = {}
     end
 

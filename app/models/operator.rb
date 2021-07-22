@@ -80,6 +80,7 @@ class Operator < ApplicationRecord
   validates :name, presence: true
   validates :website, url: true, if: lambda { |x| x.website.present? }
   validates :operator_type, inclusion: { in: TYPES }
+  validates :country, presence: true, on: :create
 
   scope :by_name_asc, -> {
     includes(:translations).with_translations(I18n.available_locales)
