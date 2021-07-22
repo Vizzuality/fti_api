@@ -99,12 +99,19 @@ module IntegrationHelper
     api_errors = []
 
     errors.each do |attribute, messages|
+      pointer = if attribute.to_s.start_with?('relationships_')
+                  :relationships
+                else
+                  :attributes
+                end
+      attribute = attribute.to_s.gsub('relationships_', '')
+
       messages.each do |message|
         error = {
           title: message,
           detail: "#{attribute} - #{message}",
           code: code.to_s,
-          source: { pointer: "/data/attributes/#{attribute}" },
+          source: { pointer: "/data/#{pointer}/#{attribute}" },
           status: status.to_s
         }
 
@@ -123,9 +130,27 @@ module IntegrationHelper
     end
 
     if attributes.present?
-      params[:data][:attributes] = attributes
+      params[:data][:attributes] = attributes.except(:relationships)
+      relationships = attributes[:relationships]
+
+      if relationships.present?
+        params[:data][:relationships] = relationships.map do |model, value|
+          {
+            model => {
+              data: {
+                type: model.to_s.pluralize,
+                id: value.to_s
+              }
+            }
+          }
+        end.reduce(&:merge)
+      end
     end
 
     params.to_json
+  end
+
+  def try_to_call(callable_or_not)
+    callable_or_not.respond_to?(:call) ? instance_exec(&callable_or_not) : callable_or_not
   end
 end

@@ -1,1 +1,94 @@
-{"1":{"attributes":{"operator":{"id":1,"approved":true,"operator_type":"Other","concession":null,"is_active":true,"logo":null,"website":null,"address":null,"name":"operator_name","details":null},"record":{"id":null,"observation_type":"operator","publication_date":"2020-12-12T00:00:00.000Z","pv":null,"is_active":false,"location_accuracy":"Estimated location","lat":null,"lng":null,"fmu_id":null,"evidence_type":"Evidence presented in the report","location_information":null,"actions_taken":null,"evidence_on_report":"Page 10","validation_status":"Created","is_physical_place":false,"user_id":null,"details":null,"concern_opinion":null,"litigation_status":null}},"errors":{"record":{"country_id":["can't be blank"]}}},"2":{"attributes":{"country":{"id":1,"iso":"DE","name":"Germany"},"operator":{"id":2,"approved":true,"operator_type":"Other","concession":null,"is_active":true,"logo":null,"website":null,"address":null,"name":"operator_name1","details":null},"record":{"id":1,"observation_type":"operator","publication_date":"2020-12-04T00:00:00.000Z","pv":null,"is_active":false,"location_accuracy":"Estimated location","lat":null,"lng":null,"fmu_id":null,"evidence_type":null,"location_information":null,"actions_taken":null,"evidence_on_report":null,"validation_status":"Created","is_physical_place":false,"user_id":null,"details":null,"concern_opinion":null,"litigation_status":null}},"errors":{}}}
+{
+    "1": {
+        "attributes": {
+            "operator": {
+                "id": null,
+                "approved": true,
+                "operator_type": "Other",
+                "concession": null,
+                "is_active": true,
+                "logo": null,
+                "website": null,
+                "address": null,
+                "name": "operator_name",
+                "details": null
+            },
+            "record": {
+                "id": null,
+                "observation_type": "operator",
+                "publication_date": "2020-12-12T00:00:00.000Z",
+                "pv": null,
+                "is_active": false,
+                "location_accuracy": "Estimated location",
+                "lat": null,
+                "lng": null,
+                "fmu_id": null,
+                "evidence_type": "Evidence presented in the report",
+                "location_information": null,
+                "actions_taken": null,
+                "evidence_on_report": "Page 10",
+                "validation_status": "Created",
+                "is_physical_place": false,
+                "user_id": null,
+                "details": null,
+                "concern_opinion": null,
+                "litigation_status": null
+            }
+        },
+        "errors": {
+            "operator": {
+                "country": [
+                    "can't be blank"
+                ]
+            },
+            "record": {
+                "country_id": [
+                    "can't be blank"
+                ]
+            }
+        }
+    },
+    "2": {
+        "attributes": {
+            "country": {
+                "id": 1,
+                "iso": "DE",
+                "name": "Germany"
+            },
+            "operator": {
+                "id": 1,
+                "approved": true,
+                "operator_type": "Other",
+                "concession": null,
+                "is_active": true,
+                "logo": null,
+                "website": null,
+                "address": null,
+                "name": "operator_name1",
+                "details": null
+            },
+            "record": {
+                "id": 1,
+                "observation_type": "operator",
+                "publication_date": "2020-12-04T00:00:00.000Z",
+                "pv": null,
+                "is_active": false,
+                "location_accuracy": "Estimated location",
+                "lat": null,
+                "lng": null,
+                "fmu_id": null,
+                "evidence_type": null,
+                "location_information": null,
+                "actions_taken": null,
+                "evidence_on_report": null,
+                "validation_status": "Created",
+                "is_physical_place": false,
+                "user_id": null,
+                "details": null,
+                "concern_opinion": null,
+                "litigation_status": null
+            }
+        },
+        "errors": {}
+    }
+}
